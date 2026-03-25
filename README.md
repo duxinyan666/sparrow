@@ -15,12 +15,15 @@ JackSparrow 是一个灵活的数据源管理框架，提供统一的数据访�
 ## ✨ 核心特性
 
 - 🔌 **多数据源支持**: Redis、Elasticsearch、MySQL、PostgreSQL
+- 🔄 **动态数据源路由**: 运行时动态注册/注销数据源
+- 🌐 **跨机器数据库访问**: 通过参数控制查询不同 IP 的数据库
 - 🔒 **分布式锁**: 基于 Redis 的分布式锁实现
 - 📊 **连接池监控**: HikariCP 连接池实时指标
 - 📈 **可观测性**: Prometheus + Grafana 监控
 - 📖 **API 文档**: Swagger/OpenAPI 3.0
 - 🐳 **容器化**: Docker Compose 一键部署
 - 🧪 **单元测试**: JUnit 5 + Mockito
+- 🏗️ **MyBatis Plus**: 集成 MyBatis Plus  ORM 框架
 
 ## 📦 技术栈
 
@@ -195,6 +198,29 @@ mvn spring-boot:run
 | `/api/health/datasources` | GET | 数据源状态 |
 | `/api/health/info` | GET | 系统详细信息 |
 | `/actuator/prometheus` | GET | Prometheus 指标 |
+
+### 动态数据源
+
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/datasource/register` | POST | 注册数据源 |
+| `/api/datasource/unregister/{key}` | DELETE | 注销数据源 |
+| `/api/datasource/list` | GET | 获取数据源列表 |
+| `/api/datasource/{key}` | GET | 获取数据源详情 |
+| `/api/datasource/{key}/test` | GET | 测试连接 |
+
+### 通用 CRUD
+
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/crud/query` | POST | 通用查询（支持任意 SQL） |
+| `/api/crud/insert` | POST | 通用插入 |
+| `/api/crud/update` | POST | 通用更新 |
+| `/api/crud/delete` | POST | 通用删除 |
+| `/api/crud/page` | POST | 分页查询 |
+| `/api/crud/tables` | GET | 获取表列表 |
+| `/api/crud/table/columns` | GET | 获取表结构 |
+| `/api/crud/quick-query` | POST | 快速查询（注册 + 查询） |
 
 ## 🎯 核心特性
 
