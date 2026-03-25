@@ -10,6 +10,7 @@ public enum ConfigKeyEnum {
     USERNAME("username"),
     PASSWORD("password"),
 
+    DATABASE("database"),
     URL("url"),
     DRIVER_CLASS("driverClassName"),
 

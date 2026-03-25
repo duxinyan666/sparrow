@@ -1,22 +1,50 @@
 [
   {
-    "sourceType":"elasticSearch" ,
-    "sourceName":"elasticName",
-    "host":"localhost",
-    "port":9200,
-    "scheme":"http"
-  },
-  {
-    "sourceType":"redis",
-    "sourceName":"redisName",
+    "sourceType": "redis",
+    "sourceName": "redisName",
     "host": "localhost",
     "port": 6379,
-    "password":"",
+    "password": "",
     "params": {
       "timeOut": 2000,
-      "maxTotal": 5,
-      "maxIdle": 3,
+      "maxTotal": 10,
+      "maxIdle": 5,
       "minIdle": 2
+    }
+  },
+  {
+    "sourceType": "elasticSearch",
+    "sourceName": "elasticName",
+    "host": "localhost",
+    "port": 9200,
+    "scheme": "http"
+  },
+  {
+    "sourceType": "mysql",
+    "sourceName": "mysqlName",
+    "host": "localhost",
+    "port": 3306,
+    "database": "test_db",
+    "username": "root",
+    "password": "your_password",
+    "params": {
+      "maxPoolSize": 10,
+      "minIdle": 2,
+      "connectionTimeout": 30000
+    }
+  },
+  {
+    "sourceType": "postgresql",
+    "sourceName": "pgName",
+    "host": "localhost",
+    "port": 5432,
+    "database": "test_db",
+    "username": "postgres",
+    "password": "your_password",
+    "params": {
+      "maxPoolSize": 10,
+      "minIdle": 2,
+      "connectionTimeout": 30000
     }
   }
 ]

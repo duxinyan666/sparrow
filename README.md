@@ -1,21 +1,45 @@
-# JackSparrow
+# JackSparrow 🏴‍☠️
 
-一个基于 Spring Boot 3.5.11 的多数据源管理平台，支持 Elasticsearch 和 Redis 集成。
+**多数据源统一管理框架** - 让数据访问更简单
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.11-brightgreen.svg)](https://spring.io/projects/spring-boot)
+
+一个基于 Spring Boot 3.5.11 的企业级多数据源管理平台，支持 Redis、Elasticsearch、MySQL、PostgreSQL 等多种数据源，提供分布式锁、连接池监控、RESTful API 等开箱即用的功能。
 
 ## 🚀 项目简介
 
-JackSparrow 是一个灵活的数据源管理框架，提供统一的数据访问接口，支持动态配置和管理多种数据源。
+JackSparrow 是一个灵活的数据源管理框架，提供统一的数据访问接口，支持动态配置和管理多种数据源。通过插件化架构，可以轻松扩展新的数据源类型。
+
+## ✨ 核心特性
+
+- 🔌 **多数据源支持**: Redis、Elasticsearch、MySQL、PostgreSQL
+- 🔒 **分布式锁**: 基于 Redis 的分布式锁实现
+- 📊 **连接池监控**: HikariCP 连接池实时指标
+- 📈 **可观测性**: Prometheus + Grafana 监控
+- 📖 **API 文档**: Swagger/OpenAPI 3.0
+- 🐳 **容器化**: Docker Compose 一键部署
+- 🧪 **单元测试**: JUnit 5 + Mockito
 
 ## 📦 技术栈
 
 - **框架**: Spring Boot 3.5.11
-- **JDK**: Java 17
-- **构建工具**: Maven
+- **JDK**: Java 17+
+- **构建工具**: Maven 3.6+
 - **数据源**:
-  - Elasticsearch 7.9.3
   - Redis (Jedis 5.2.0)
-- **其他依赖**:
-  - FastJSON 1.2.78
+  - Elasticsearch 7.9.3
+  - MySQL 8.0 (HikariCP 5.1.0)
+  - PostgreSQL 15 (HikariCP 5.1.0)
+- **监控**:
+  - Micrometer + Prometheus
+  - Grafana
+  - Spring Boot Actuator
+- **文档**: SpringDoc OpenAPI 2.3.0
+- **其他**:
+  - FastJSON 2.0.43
+  - Lombok
   - Commons IO 2.20.0
 
 ## 🏗️ 项目结构
@@ -111,13 +135,66 @@ mvn spring-boot:run
 
 ## 📡 API 接口
 
+启动后访问 Swagger 文档：http://localhost:8080/swagger-ui.html
+
+### Redis 操作
+
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/redis/set` | PUT | 设置字符串值 |
+| `/api/redis/setex` | PUT | 设置带过期时间的值 |
+| `/api/redis/get` | GET | 获取字符串值 |
+| `/api/redis/del` | DELETE | 删除键 |
+| `/api/redis/exists` | GET | 检查键是否存在 |
+| `/api/redis/expire` | POST | 设置过期时间 |
+| `/api/redis/ttl` | GET | 获取剩余过期时间 |
+| `/api/redis/incr` | POST | 自增 |
+| `/api/redis/decr` | POST | 自减 |
+| `/api/redis/hset` | PUT | 哈希设置 |
+| `/api/redis/hget` | GET | 哈希获取 |
+| `/api/redis/lpush` | POST | 列表左侧推送 |
+| `/api/redis/rpop` | POST | 列表右侧弹出 |
+
+### 数据库操作 (MySQL/PostgreSQL)
+
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/database/query` | POST | 执行 SQL 查询 |
+| `/api/database/update` | POST | 执行 SQL 更新 |
+| `/api/database/insert` | POST | 执行 SQL 插入 |
+| `/api/database/batch` | POST | 批量执行 |
+| `/api/database/table/exists` | GET | 检查表是否存在 |
+| `/api/database/table/columns` | GET | 获取表结构 |
+| `/api/database/pool/status` | GET | 连接池状态 |
+| `/api/database/test` | GET | 测试连接 |
+
+### 分布式锁
+
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/lock/try` | POST | 尝试获取锁 |
+| `/api/lock/try-retry` | POST | 带重试获取锁 |
+| `/api/lock/unlock` | POST | 释放锁 |
+| `/api/lock/status` | GET | 检查锁状态 |
+| `/api/lock/renew` | POST | 续期锁 |
+| `/api/lock/ttl` | GET | 获取锁剩余时间 |
+
 ### Elasticsearch
 
-- `ElasticSearchController` - 提供 ES 数据操作接口
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/elasticSearch/getMapping` | GET | 获取索引映射 |
+| `/api/elasticSearch/addDoc` | POST | 批量插入文档 |
+| `/api/elasticSearch/select` | POST | 多条件查询 |
 
-### Redis
+### 健康检查
 
-- `RedisController` - 提供 Redis 缓存操作接口
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/health` | GET | 系统健康检查 |
+| `/api/health/datasources` | GET | 数据源状态 |
+| `/api/health/info` | GET | 系统详细信息 |
+| `/actuator/prometheus` | GET | Prometheus 指标 |
 
 ## 🎯 核心特性
 

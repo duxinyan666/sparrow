@@ -9,8 +9,9 @@ services:
     container_name: jacksparrow-app
     ports:
       - "8080:8080"
+      - "9090:9090"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=docker
       - JAVA_OPTS=-Xms256m -Xmx512m
     volumes:
       - ./logs:/app/logs
@@ -18,6 +19,10 @@ services:
       redis:
         condition: service_healthy
       elasticsearch:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     networks:
       - jacksparrow-net
@@ -63,10 +68,97 @@ services:
       - jacksparrow-net
     restart: unless-stopped
 
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: jacksparrow-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=test_db
+      - MYSQL_USER=jacksparrow
+      - MYSQL_PASSWORD=jacksparrow123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./src/main/resources/init/mysql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jacksparrow-net
+    restart: unless-stopped
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: jacksparrow-postgres
+    environment:
+      - POSTGRES_DB=test_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/init/postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d test_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jacksparrow-net
+    restart: unless-stopped
+
+  # Prometheus (监控)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: jacksparrow-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - jacksparrow-net
+    restart: unless-stopped
+    depends_on:
+      - jacksparrow
+
+  # Grafana (可视化)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jacksparrow-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - jacksparrow-net
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
 volumes:
   redis-data:
     driver: local
   es-data:
+    driver: local
+  mysql-data:
+    driver: local
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
     driver: local
 
 networks:
